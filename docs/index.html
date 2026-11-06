@@ -113,10 +113,16 @@ p{margin:0 0 16px}
 .figcap{font-size:14px;color:var(--ink-3);margin:10px 0 0;max-width:var(--text)}
 
 .attacks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:28px 0 0}
-.attacks figure{margin:0}
-.attacks img{width:100%;aspect-ratio:1;object-fit:cover;display:block;border-radius:12px;border:1px solid var(--rule)}
-.attacks b{display:block;font-size:15px;margin:10px 0 2px}
-.attacks span{display:block;font-size:13.5px;color:var(--ink-2);line-height:1.4}
+.atk{border:1px solid var(--rule);border-radius:14px;padding:18px 18px 16px;margin:0;display:flex;flex-direction:column}
+.atk .ic{width:56px;height:56px;display:block;margin:0 0 14px}
+.atk b{display:block;font-size:16px;margin:0 0 4px}
+.atk .d{display:block;font-size:13.5px;color:var(--ink-2);line-height:1.4;margin:0 0 16px;flex:1}
+.ab{display:grid;grid-template-columns:62px 1fr 38px;gap:8px;align-items:center;font-size:12.5px;color:var(--ink-3);margin:0 0 6px}
+.ab .tr{height:10px;background:var(--wash);border-radius:5px;overflow:hidden}
+.ab .fl{display:block;height:100%;border-radius:5px}
+.ab .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.ab.rg .v{color:var(--accent);font-weight:700}
+.ab.to .fl{background:transparent;border:1.5px dashed var(--ink-3);box-sizing:border-box}
 
 /* findings */
 .finding{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:40px;align-items:center;padding:36px 0;border-top:1px solid var(--rule)}
@@ -192,6 +198,9 @@ footer a{color:var(--ink-2)}
 @media (max-width:860px){
   .hgrid,.finding,.mgrid,.grid2{grid-template-columns:minmax(0,1fr);gap:32px}
   .attacks{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:480px){
+  .attacks{grid-template-columns:minmax(0,1fr)}
   .pgrid{grid-template-columns:minmax(0,1fr)}
   .drops{grid-template-columns:1fr}
   .drop,.drop+.drop{padding:18px 0;border-left:0}
@@ -302,12 +311,36 @@ footer a{color:var(--ink-2)}
       <p>Earlier work suspected that the gap between how a model represents images and how it represents text was to blame, but no one had measured it. We measure the gap across nine open vision-language models and find it tracks unsafe behavior closely. We trace where it opens up, during multimodal pretraining, and show that narrowing it makes the same model safer. That leads to <b>ReGap</b>: a single extra loss term during pretraining that keeps image tokens close to the text distribution the language model was aligned on.</p>
     </div>
     <div class="attacks">
-      <figure><img src="static/hades-original.jpg" width="480" height="480" alt="A diffusion-generated image of a man and a dog beside a fire on a mountainside"><b>Generated images</b><span>HADES pairs each harmful request with a diffusion image built to match it.</span></figure>
-      <figure><img src="static/hades-toxic.jpg" width="480" height="480" alt="A cartoon of a police officer chasing a thief carrying a money bag labeled Steal"><b>Real-world images</b><span>HADES Toxic retrieves real images from the web that match each request.</span></figure>
-      <figure><img src="static/mm-safety.jpg" width="480" height="480" alt="A padlock resting on a computer keyboard"><b>Topic images</b><span>MM-SafetyBench encodes the harmful intent in typography or generated images.</span></figure>
-      <figure><img src="static/hades-adv.jpg" width="480" height="480" alt="A roaring panda with faint adversarial noise across the image"><b>Adversarial noise</b><span>HADES Adv adds optimized perturbations that push the model toward complying.</span></figure>
+      <figure class="atk" role="group" aria-label="Generated images: unsafe rate 26.1% text only, 68.1% LLaVA, 63.2% ReGap">
+        <svg class="ic" viewBox="0 0 56 56" aria-hidden="true" style="color:#1a2233"><rect x="6" y="12" width="36" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 38l9-10 7 7 5-5 8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="21" r="3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 6v8M42 10h8M48 20v5M45.5 22.5h5" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round"/></svg>
+        <b>Generated images</b><span class="d">A diffusion image made to match each harmful request (HADES).</span>
+        <div class="ab to"><span>Text only</span><span class="tr"><span class="fl" style="width:32.6%;"></span></span><span class="v">26.1%</span></div>
+        <div class="ab "><span>LLaVA</span><span class="tr"><span class="fl" style="width:85.1%;background:#9aa1ae"></span></span><span class="v">68.1%</span></div>
+        <div class="ab rg"><span>ReGap</span><span class="tr"><span class="fl" style="width:79.0%;background:#b45309"></span></span><span class="v">63.2%</span></div>
+      </figure>
+      <figure class="atk" role="group" aria-label="Real-world images: unsafe rate 26.1% text only, 68.3% LLaVA, 52.0% ReGap">
+        <svg class="ic" viewBox="0 0 56 56" aria-hidden="true" style="color:#1a2233"><path d="M8 18h8l4-6h16l4 6h8v26H8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="28" cy="30" r="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="28" cy="30" r="3" fill="#b45309"/></svg>
+        <b>Real-world images</b><span class="d">Photos retrieved from the web that match the request (HADES Toxic).</span>
+        <div class="ab to"><span>Text only</span><span class="tr"><span class="fl" style="width:32.6%;"></span></span><span class="v">26.1%</span></div>
+        <div class="ab "><span>LLaVA</span><span class="tr"><span class="fl" style="width:85.4%;background:#9aa1ae"></span></span><span class="v">68.3%</span></div>
+        <div class="ab rg"><span>ReGap</span><span class="tr"><span class="fl" style="width:65.0%;background:#b45309"></span></span><span class="v">52.0%</span></div>
+      </figure>
+      <figure class="atk" role="group" aria-label="Typography: unsafe rate 2.6% text only, 30.4% LLaVA, 25.9% ReGap">
+        <svg class="ic" viewBox="0 0 56 56" aria-hidden="true" style="color:#1a2233"><rect x="6" y="10" width="44" height="36" rx="5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="15" y="36" font-family="Georgia, serif" font-size="20" font-weight="700" fill="currentColor">Aa</text><path d="M36 21h8M36 28h8M36 35h5" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round"/></svg>
+        <b>Typography</b><span class="d">The harmful topic written into the image as text (MM-SafetyBench).</span>
+        <div class="ab to"><span>Text only</span><span class="tr"><span class="fl" style="width:3.2%;"></span></span><span class="v">2.6%</span></div>
+        <div class="ab "><span>LLaVA</span><span class="tr"><span class="fl" style="width:38.0%;background:#9aa1ae"></span></span><span class="v">30.4%</span></div>
+        <div class="ab rg"><span>ReGap</span><span class="tr"><span class="fl" style="width:32.4%;background:#b45309"></span></span><span class="v">25.9%</span></div>
+      </figure>
+      <figure class="atk" role="group" aria-label="Adversarial noise: unsafe rate 26.1% text only, 59.1% LLaVA, 48.0% ReGap">
+        <svg class="ic" viewBox="0 0 56 56" aria-hidden="true" style="color:#1a2233"><rect x="6" y="10" width="44" height="36" rx="5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="12" y="16" width="3" height="3" fill="#b45309"/><rect x="20" y="22" width="3" height="3" fill="#1a2233"/><rect x="28" y="15" width="3" height="3" fill="#b45309"/><rect x="38" y="19" width="3" height="3" fill="#1a2233"/><rect x="14" y="30" width="3" height="3" fill="#1a2233"/><rect x="24" y="34" width="3" height="3" fill="#b45309"/><rect x="33" y="28" width="3" height="3" fill="#1a2233"/><rect x="42" y="35" width="3" height="3" fill="#b45309"/><rect x="18" y="40" width="3" height="3" fill="#b45309"/><rect x="36" y="40" width="3" height="3" fill="#1a2233"/><rect x="44" y="25" width="3" height="3" fill="#b45309"/><rect x="28" y="24" width="3" height="3" fill="#1a2233"/></svg>
+        <b>Adversarial noise</b><span class="d">Optimized perturbations that push the model to comply (HADES Adv).</span>
+        <div class="ab to"><span>Text only</span><span class="tr"><span class="fl" style="width:32.6%;"></span></span><span class="v">26.1%</span></div>
+        <div class="ab "><span>LLaVA</span><span class="tr"><span class="fl" style="width:73.9%;background:#9aa1ae"></span></span><span class="v">59.1%</span></div>
+        <div class="ab rg"><span>ReGap</span><span class="tr"><span class="fl" style="width:60.0%;background:#b45309"></span></span><span class="v">48.0%</span></div>
+      </figure>
     </div>
-    <p class="figcap">The kinds of images used to jailbreak vision-language models in our evaluation, from Appendix E of the paper. FigStep, also evaluated, renders the request itself as a typographic image.</p>
+    <p class="figcap">The four kinds of image attack in our evaluation, with the unsafe rate of each. Text only sends the same requests to the language model without an image. FigStep, also evaluated, renders the whole request as an image.</p>
   </div>
 </section>
 
